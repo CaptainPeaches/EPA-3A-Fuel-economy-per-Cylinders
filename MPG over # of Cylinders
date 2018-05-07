@@ -1,0 +1,36 @@
+library(tidyverse)
+library(readxl)
+library(RColorBrewer)
+  fuel.economy <- read_excel(
+    "Fuel economy stratified by vehicle type and cylinder count.xlsx")
+  
+  # convert to tibble
+  
+  fuel.economy <- as.data.frame(fuel.economy) 
+  
+
+# Filter to 3A emmissions standards
+  
+  fuel.economy <- fuel.economy %>%
+    filter(`Model Year` > 2009) 
+  
+  
+  # Round MPG to nearest 1
+  
+  fuel.economy <- fuel.economy %>%
+    filter(`Fuel Economy (MPG)` < 200 )
+  
+  fuel.economy <- fuel.economy %>%
+    mutate(`Fuel Economy (MPG)` =
+             round(as.numeric(`Fuel Economy (MPG)`), 1)) %>%
+    filter(`Fuel Economy (MPG)` != is.na(`Fuel Economy (MPG)`))
+ 
+
+  # graph fuel.economy over # of cylinders
+  
+   fuel.economy %>%
+    ggplot(aes(Cylinders, `Fuel Economy (MPG)`, colour = Cylinders)) + 
+     coord_cartesian(ylim = c(0, 150)) +
+    geom_boxplot(alpha = .2) + 
+     ggtitle("Fuel Economy Per # of Cylinders") +
+     theme(plot.title = element_text(hjust = .5))
